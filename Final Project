@@ -1,0 +1,51 @@
+from qiskit import IBMQ, BasicAer
+from qiskit import ClassicalRegister, QuantumRegister, QuantumCircuit
+from qiskit.visualization import plot_histogram
+from qiskit import execute
+import sys
+import numpy as np
+import math
+
+def quantum_lottery():
+    n = 3
+    q = QuantumRegister(n) # Quantum Register
+    c = ClassicalRegister(n)  # Classical Register
+
+
+    qc = QuantumCircuit(q, c) # creating Quantum Circuit
+    qc.h(q)  # add hadamard gate on qubit
+    qc.measure(q, c)  # measure the circuit
+
+    qc.draw()
+    
+    job = execute(qc, BasicAer.get_backend('qasm_simulator'), shots=1, memory=True)
+    bit_data = job.result().get_memory()
+
+    int_data = []
+    for binString in bit_data: # converting binary to decimal ints into an array
+        int_data.append( int(binString,2) )   
+
+
+    
+    print("Welcome to the quantum lottery game! ")
+    lott_array = list()
+ 
+    guess = input("Please pick a number from 0 - 7: ").split() 
+    for num in guess: 
+        lott_array.append(int(num))
+        
+    print(lott_array)
+    print("The lucky numbers are: ", int_data)
+    
+
+    match = False
+    if np.array_equal(lott_array, int_data):
+        match = True
+        print("Congratulations! You're the lucky winner! ")
+    else:
+        print("Sorry your numbers don't match ")
+
+
+
+quantum_lottery()
+
