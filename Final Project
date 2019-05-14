@@ -14,10 +14,8 @@ def quantum_lottery():
 
     qc = QuantumCircuit(q, c) # creating Quantum Circuit
     qc.h(q)  # add hadamard gate on qubit
-    qc.measure(q, c)  # measure the circuit
+    qc.measure(q, c) # measure
 
-    qc.draw()
-    
     job = execute(qc, BasicAer.get_backend('qasm_simulator'), shots=1, memory=True)
     bit_data = job.result().get_memory()
 
@@ -34,18 +32,27 @@ def quantum_lottery():
     for num in guess: 
         lott_array.append(int(num))
         
-    print(lott_array)
-    print("The lucky numbers are: ", int_data)
-    
+    while not np.array_equal(lott_array, int_data):
+        match = False
+        if np.array_equal(lott_array, int_data):
+            match = True
+        else:
+            print("You picked the number ", lott_array)
+            print("The lucky number is: ", int_data)
+            print("Sorry your numbers don't match ")
+            job = execute(qc, BasicAer.get_backend('qasm_simulator'), shots=1, memory=True)
+            bit_data = job.result().get_memory()
 
-    match = False
-    if np.array_equal(lott_array, int_data):
-        match = True
-        print("Congratulations! You're the lucky winner! ")
-    else:
-        print("Sorry your numbers don't match ")
-
-
-
+            int_data = []
+            for binString in bit_data: # converting binary to decimal ints into an array
+                int_data.append( int(binString,2) )
+            lott_array = list()    
+            guess = input("Please choose another number from 0 - 7: ").split() 
+            for num in guess: 
+                lott_array.append(int(num))
+       
+    print("You picked the number ", lott_array)
+    print("The lucky number is: ", int_data)    
+    print("Congratulations! You've won the game! ")
 quantum_lottery()
 
